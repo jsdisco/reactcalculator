@@ -6,9 +6,11 @@ function Calculator(){
 
     const [input, setInput] = useState(['0']);
 
-    function updateInput(e){
+    function handleClicks(e){
         if (e.target.classList.contains('clear')) {
             clear();
+        } else if (e.target.classList.contains('back')) {
+            handleBackClick();
         } else if (e.target.classList.contains('number')){
             handleNumClick(e)
         } else if (e.target.classList.contains('operator')){
@@ -20,38 +22,14 @@ function Calculator(){
         setInput(['0']);
     }
 
-    function isFirstClick(){
-        return input.length === 1 && input[0] === '0';
-    }
-
-    function lastInputType(indexFromEnd) {
-        let type;
-        if (!isNaN(input[input.length - 1 - indexFromEnd])) {
-            type = "num";
-        } else if (input[input.length - 1 - indexFromEnd] === ".") {
-            type = "decimal";
-        } else if (input[input.length - 1 - indexFromEnd] === "-") {
-            type = "minus";
-        } else if (isNaN(input[input.length - 1 - indexFromEnd])) {
-            type = "other-op";
-        }
-        return type;
-    }
-
-    function isCurrNumDecimal(){
-        let inputArr = [...input];
-        const loopThroughInput = (arr,n) => {
-            if (lastInputType(n) === 'minus' || lastInputType(n) === 'other-op'){
-                return false
-            } else if (lastInputType(n) === 'num'){
-                arr.pop();
-                n += 1;
-                return loopThroughInput(arr,n)
-            } else if (lastInputType(n) === 'decimal'){
-                return true;
-            }
+    function handleBackClick(){
+        let newInputArr = [...input];
+        if(input.length > 1) {
+            newInputArr.pop();
+        } else if (input.length === 1 && input[0] !== '0'){
+            newInputArr = ['0']
         };
-        return loopThroughInput(inputArr,0);
+        setInput(newInputArr)
     }
 
     function handleNumClick(e){
@@ -109,6 +87,41 @@ function Calculator(){
         }
     }
 
+    function isFirstClick(){
+        return input.length === 1 && input[0] === '0';
+    }
+
+    function lastInputType(indexFromEnd) {
+        let type;
+        if (!isNaN(input[input.length - 1 - indexFromEnd])) {
+            type = "num";
+        } else if (input[input.length - 1 - indexFromEnd] === ".") {
+            type = "decimal";
+        } else if (input[input.length - 1 - indexFromEnd] === "-") {
+            type = "minus";
+        } else if (isNaN(input[input.length - 1 - indexFromEnd])) {
+            type = "other-op";
+        }
+        return type;
+    }
+
+    function isCurrNumDecimal(){
+        let inputArr = [...input];
+        const loopThroughInput = (arr,n) => {
+            if (lastInputType(n) === 'minus' || lastInputType(n) === 'other-op'){
+                return false
+            } else if (lastInputType(n) === 'num'){
+                arr.pop();
+                n += 1;
+                return loopThroughInput(arr,n)
+            } else if (lastInputType(n) === 'decimal'){
+                return true;
+            }
+        };
+        return loopThroughInput(inputArr,0);
+    }
+
+
     function evaluate(){
         let str = input.join('');
         let numbersArr = str.split(/\+|-|\*|\//).filter(e => !!e);
@@ -142,7 +155,8 @@ function Calculator(){
         },0);
 
         result = Math.round(1000000000000 * result) / 1000000000000;
-        setInput([result]);
+        let newInputArr = result.toString().split('');
+        setInput(newInputArr);
     }
 
     const display = input.join('');
@@ -150,7 +164,7 @@ function Calculator(){
     return (
         <div id="calculator">
             <Display display={display}/>
-            <Keypad updateInput={updateInput} />
+            <Keypad handleClicks={handleClicks} />
         </div>
     )
 }

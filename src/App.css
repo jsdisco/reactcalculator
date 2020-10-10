@@ -53,10 +53,6 @@ header h1 {
   cursor: pointer;
 }
 
-#keypad .button#clear {
-  width: 40%;
-}
-
 #keypad .button#equals {
   width: 60%;
 }

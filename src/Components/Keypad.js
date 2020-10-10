@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from './Button.js';
 
-function Keypad( {updateInput }){
+function Keypad( { handleClicks }){
 
     const btns = [
         {
@@ -23,6 +23,11 @@ function Keypad( {updateInput }){
             id:'clear',
             class:'clear',
             text:'C'
+        },
+        {
+            id:'back',
+            class:'back',
+            text:'<<'
         },
         {
             id:'four',
@@ -99,7 +104,7 @@ function Keypad( {updateInput }){
                     id={btn.id}
                     className={`button ${btn.class}`}
                     text={btn.text}
-                    updateInput={updateInput}/>
+                    handleClicks={handleClicks}/>
             })}
         </div>
     )
