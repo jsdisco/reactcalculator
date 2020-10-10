@@ -5,7 +5,6 @@ import Keypad from './Keypad.js';
 function Calculator(){
 
     const [input, setInput] = useState(['0']);
-    const [currNum, setCurrNum] = useState('');
 
     function updateInput(e){
         if (e.target.classList.contains('clear')) {
@@ -19,7 +18,6 @@ function Calculator(){
 
     function clear(){
         setInput(['0']);
-        setCurrNum('')
     }
 
     function isFirstClick(){
@@ -40,20 +38,33 @@ function Calculator(){
         return type;
     }
 
+    function isCurrNumDecimal(){
+        let inputArr = [...input];
+        const loopThroughInput = (arr,n) => {
+            if (lastInputType(n) === 'minus' || lastInputType(n) === 'other-op'){
+                return false
+            } else if (lastInputType(n) === 'num'){
+                arr.pop();
+                n += 1;
+                return loopThroughInput(arr,n)
+            } else if (lastInputType(n) === 'decimal'){
+                return true;
+            }
+        };
+        return loopThroughInput(inputArr,0);
+    }
+
     function handleNumClick(e){
-        let newNum = currNum;
         let newInputArr = [...input];
         let thisInput = e.target.textContent;
 
         if (thisInput === '.'){
-            if (!currNum.includes('.')){
+            if (!isCurrNumDecimal()){
                 if (isFirstClick() || lastInputType(0) === 'num'){
                     newInputArr.push(thisInput);
-                    newNum = isFirstClick() ? newNum.concat('0.') : newNum.concat('.')
                 } else if (lastInputType(0) === 'minus' || lastInputType(0) === 'other-op') {
                     newInputArr.push('0');
                     newInputArr.push(thisInput);
-                    newNum = newNum.concat('0.')
                 }
             }
         } else {
@@ -61,9 +72,7 @@ function Calculator(){
                 newInputArr.pop();
             }
             newInputArr.push(thisInput);
-            newNum = newNum.concat(thisInput);
         }
-        setCurrNum(newNum);
         setInput(newInputArr);
     }
 
@@ -71,9 +80,6 @@ function Calculator(){
         let newInputArr = [...input];
         let thisInput = e.target.textContent;
 
-        if (lastInputType(0) !== 'decimal'){
-            setCurrNum('');
-        }
         if (thisInput === '-'){
             if (isFirstClick()) {
                 newInputArr.pop();
@@ -137,7 +143,6 @@ function Calculator(){
 
         result = Math.round(1000000000000 * result) / 1000000000000;
         setInput([result]);
-        setCurrNum(result.toString());
     }
 
     const display = input.join('');
